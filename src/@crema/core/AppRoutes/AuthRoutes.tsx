@@ -10,11 +10,16 @@ const ConfirmSignupAwsCognito = React.lazy(
 const ResetPasswordAwsCognito = React.lazy(
   () => import("../../../modules/auth/ForgetPassword/ResetPasswordAwsCognito"),
 );
+//const Academy = React.lazy(() => import("../../../modules/dashboards/Academy"));
 export const authRouteConfig = [
   {
     path: "/signin",
     element: <Signin />,
   },
+  // {
+  //     path: "/dashboards/academy",
+  //     element: <Academy />,
+  // },
   {
     path: "/signup",
     element: <Signup />,

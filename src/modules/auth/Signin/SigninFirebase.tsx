@@ -47,6 +47,7 @@ const SigninFirebase = () => {
             }}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
+              console.log("data firebase", data);
               setSubmitting(true);
               logInWithEmailAndPassword(data);
               setSubmitting(false);

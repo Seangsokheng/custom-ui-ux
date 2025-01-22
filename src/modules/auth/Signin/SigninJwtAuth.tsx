@@ -44,6 +44,7 @@ const SigninJwtAuth = () => {
             }}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
+              console.log("data jwt", data);
               setSubmitting(true);
               signInUser({
                 email: data.email,

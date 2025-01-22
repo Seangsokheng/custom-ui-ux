@@ -18,8 +18,7 @@ import type { CryptoPropsType } from "@crema/types/models/dashboards/Crypto";
 const Crypto = () => {
   const [{ apiData: cryptoData, loading }] =
     useGetDataApi<CryptoPropsType>("/dashboard/crypto");
-
-  console.log(cryptoData, loading);
+  console.log(cryptoData, "testing", loading);
   return (
     <>
       {loading ? (
