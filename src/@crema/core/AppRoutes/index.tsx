@@ -5,8 +5,9 @@ import Error403 from "../../../modules/errorPages/Error403";
 import { errorPagesConfigs } from "./ErrorPagesRoutes";
 import { dashBoardConfigs } from "./DashboardsRoutes";
 import { accountPagesConfigs } from "./AccountRoutes";
+import { guestConfig } from "./guest";
 
-
+// handle auth
 const authorizedStructure = (loginUrl: string) => {
   return {
     fallbackPath: loginUrl,
@@ -14,6 +15,7 @@ const authorizedStructure = (loginUrl: string) => {
     routes: [
       ...dashBoardConfigs,
       ...accountPagesConfigs,
+      ...guestConfig,
     ],
   };
 };
@@ -21,7 +23,10 @@ const authorizedStructure = (loginUrl: string) => {
 const publicStructure = (initialUrl: string) => {
   return {
     fallbackPath: initialUrl,
-    routes: authRouteConfig,
+    routes: [
+      ...guestConfig,
+      ...authRouteConfig,
+    ],
   };
 };
 const anonymousStructure = (initialUrl: string) => {

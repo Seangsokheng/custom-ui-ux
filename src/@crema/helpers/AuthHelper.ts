@@ -14,6 +14,7 @@ export const getUserFromAuth0 = (user: any) => {
 };
 
 export const getUserFromFirebase = (user: any) => {
+  
   if (user)
     return {
       id: 1,
@@ -21,7 +22,7 @@ export const getUserFromFirebase = (user: any) => {
       displayName: user.displayName ? user.displayName : 'Crema User',
       email: user.email,
       photoURL: user.photoURL ? user.photoURL : '/assets/images/avatar/A11.jpg',
-      role: authRole.User,
+      role: user.email === 'admin24@gmail.com' ? authRole.Admin : authRole.User,
     };
   return user;
 };

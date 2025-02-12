@@ -1,6 +1,7 @@
 export const authRole = {
   Admin: ["admin"],
-  User: ["user", "admin"],
+  User: [ "user","admin"],
+  ClubManager: ["clubManager"],
 };
 
 export const defaultUser = {
@@ -8,7 +9,7 @@ export const defaultUser = {
   displayName: "John Alex",
   email: "demo@example.com",
   token: "access-token",
-  role: "user",
+  role: "admin",
   photoURL: "/assets/images/avatar/A11.jpg",
 };
 export const allowMultiLanguage = import.meta.env.VITE__MULTILINGUAL === "true";

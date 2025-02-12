@@ -1,3 +1,5 @@
+import { Manager } from "react-popper";
+
 export enum ThemeStyle {
   MODERN = 'modern',
   STANDARD = 'standard',
@@ -87,4 +89,5 @@ export enum MessageType {
 export enum RoutePermittedRole {
   Admin = 'admin',
   User = 'user',
+  ClubManager = 'clubManager',
 }
