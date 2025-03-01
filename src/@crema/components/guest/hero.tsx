@@ -1,20 +1,89 @@
-export default function Hero() {
-    return (
-      <div className="flex flex-col md:flex-row items-center justify-between py-12 px-6 max-w-7xl mx-auto">
-        <div className="md:w-1/2 mb-8 md:mb-0">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Discover Your Passion</h1>
-          <h2 className="text-3xl md:text-4xl text-blue-500 mb-6">Join a Club Today!</h2>
-          <button className="bg-blue-500 text-white px-8 py-3 rounded-md hover:bg-blue-600 transition">
+import { Box, Typography, Button, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+export default function Hero () {
+  const navigate = useNavigate();
+
+  return (
+    <Container
+      maxWidth={false}
+      sx={{
+        maxWidth: 1200,
+        pt: { xs: 4, md: 8 },
+        pb: { xs: 3, md: 0 },
+        px: { xs: 4, md: 6 }, 
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: 'center',
+          gap: { xs: 4, md: 6 },
+        }}
+      >
+        <Box sx={{ 
+          flex: 1, 
+          maxWidth: { xs: '100%', md: '40%' },
+          textAlign: { xs: 'center', md: 'left' }
+        }}>
+          <Typography 
+            variant="h1" 
+            sx={{ 
+              mb: 2,
+              fontSize: { xs: '2rem', md: '2.75rem' },
+              fontWeight: 700
+            }}
+          >
+            Discover Your Passion
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: { xs: '1.5rem', md: '2rem' },
+              color: 'primary.main',
+              fontWeight: 500,
+              mb: 4,
+              lineHeight: 1.2
+            }}
+          >
+            Join a Club Today!
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => navigate('/signup')}
+            sx={{
+              height: { xs: 40, md: 45 },
+              px: { xs: 3, md: 4 },
+              fontSize: { xs: '0.9rem', md: '1rem' }
+            }}
+          >
             Join Now
-          </button>
-        </div>
-        <div className="md:w-1/2">
+          </Button>
+        </Box>
+        <Box
+          sx={{
+          flex: 1,
+          width: '100%',
+          height: { xs: 300, md: 400 }, // Set fixed height to prevent cropping
+          maxHeight: { xs: 300, md: 400 }, 
+          borderRadius: 2,
+          overflow: 'hidden',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        }}
+        >
           <img
-            src="/images/hero-image.jpg"
+            src="/assets/images/guest/header.jpg"
             alt="Happy students with sports equipment"
-            className="rounded-lg w-full h-auto"
+            style={{
+              width: '100%',
+              height: 'auto', // Fix stretched height issue
+              maxHeight: '100%', // Ensures it doesn't overflow the Box
+              objectFit: 'cover',
+            }}
           />
-        </div>
-      </div>
-    );
-  }
+        </Box>
+
+      </Box>
+    </Container>
+  );
+};

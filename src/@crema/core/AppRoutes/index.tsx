@@ -6,6 +6,7 @@ import { errorPagesConfigs } from "./ErrorPagesRoutes";
 import { dashBoardConfigs } from "./DashboardsRoutes";
 import { accountPagesConfigs } from "./AccountRoutes";
 import { guestConfig } from "./guest";
+import { studentConfig } from "./student";
 
 // handle auth
 const authorizedStructure = (loginUrl: string) => {
@@ -15,7 +16,8 @@ const authorizedStructure = (loginUrl: string) => {
     routes: [
       ...dashBoardConfigs,
       ...accountPagesConfigs,
-      ...guestConfig,
+      ...studentConfig,
+      // ...guestConfig,
     ],
   };
 };
@@ -33,13 +35,13 @@ const anonymousStructure = (initialUrl: string) => {
   return {
     routes: errorPagesConfigs.concat([
       {
-        path: "/",
+        path: "*",
         element: <Navigate to={initialUrl} />,
       },
-      {
-        path: "*",
-        element: <Navigate to="/error-pages/error-404" />,
-      },
+      // {
+      //   path: "*",
+      //   element: <Navigate to="/error-pages/error-404" />,
+      // },
     ]),
   };
 };

@@ -108,7 +108,7 @@ const SigninJwtAuth = () => {
                       <IntlMessages id="common.rememberMe" />
                     </Box>
                   </Box>
-                  <Box
+                  {/* <Box
                     component="span"
                     sx={{
                       color: (theme) => theme.palette.primary.main,
@@ -120,7 +120,7 @@ const SigninJwtAuth = () => {
                     onClick={onGoToForgetPassword}
                   >
                     <IntlMessages id="common.forgetPassword" />
-                  </Box>
+                  </Box> */}
                 </Box>
 
                 <div>

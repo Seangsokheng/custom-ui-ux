@@ -1,4 +1,4 @@
-import { FaRegCalendarAlt, FaRegHospital } from "react-icons/fa";
+import { FaHome, FaRegCalendarAlt, FaRegHospital, FaUsers } from "react-icons/fa";
 import { FiMap, FiUsers } from "react-icons/fi";
 import { HiOutlineAcademicCap, HiOutlineChartSquareBar } from "react-icons/hi";
 import {
@@ -18,6 +18,7 @@ import {
 } from "react-icons/bs";
 import { DiHtml5Multimedia } from "react-icons/di";
 import {
+  MdExplore,
   MdOutlineAnalytics,
   MdOutlineContactPhone,
   MdOutlineContactSupport,
@@ -26,7 +27,7 @@ import {
 } from "react-icons/md";
 import { CgFeed } from "react-icons/cg";
 import { GrUserAdmin } from "react-icons/gr";
-import { AiOutlineEdit, AiOutlineUnorderedList } from "react-icons/ai";
+import { AiOutlineEdit, AiOutlineLogout, AiOutlineUnorderedList } from "react-icons/ai";
 import { RoutePermittedRole } from "@crema/constants/AppEnums";
 import { TbFileInvoice } from "react-icons/tb";
 
@@ -58,69 +59,104 @@ const routesConfig = [
     ],
   },
   {
-        id: "error-pages",
-        title: "Error Pages",
-        messageId: "sidebar.pages.errorPages",
-        type: "collapse",
-        icon: <BiErrorAlt />,
-        children: [
-          {
-            id: "error-401",
-            title: "402",
-            messageId: "sidebar.pages.errorPages.401",
-            type: "item",
-            permittedRole: [RoutePermittedRole.User],
-            url: "/error-pages/error-401",
-          },
-          {
-            id: "error-403",
-            title: "403",
-            messageId: "sidebar.pages.errorPages.403",
-            type: "item",
-            permittedRole: [RoutePermittedRole.User],
-            url: "/error-pages/error-403",
-          },
-          {
-            id: "error-404",
-            title: "404",
-            messageId: "sidebar.pages.errorPages.404",
-            type: "item",
-            permittedRole: [RoutePermittedRole.User],
-            url: "/error-pages/error-404",
-          },
-          {
-            id: "error-500",
-            title: "500",
-            messageId: "sidebar.pages.errorPages.500",
-            type: "item",
-            permittedRole: [RoutePermittedRole.User],
-            url: "/error-pages/error-500",
-          },
-          {
-            id: "error-503",
-            title: "503",
-            messageId: "sidebar.pages.errorPages.503",
-            type: "item",
-            permittedRole: [RoutePermittedRole.User],
-            url: "/error-pages/error-503",
-          },
-          {
-            // id: "maintenance",
-            // title: "Maintenance",
-            // messageId: "sidebar.pages.errorPages.maintenance",
-            // type: "item",
-            permittedRole: [RoutePermittedRole.User],
-            url: "/error-pages/maintenance",
-          },
-          {
-            id: "coming-soon",
-            title: "Coming Soon",
-            messageId: "sidebar.pages.errorPages.comingSoon",
-            type: "item",
-            permittedRole: [RoutePermittedRole.User],
-            url: "/error-pages/coming-soon",
-          },
-        ],
+    id: "app",
+    title: "Application",
+    messageId: "sidebar.application",
+    type: "group",
+    children: [
+      {
+        id: "home",
+        title: "Home",
+        messageId: "Home",
+        type: "item",
+        permittedRole: [RoutePermittedRole.User],
+        icon: <FaHome />,
+        url: "/student",
       },
+      {
+        id: "my-club",
+        title: "My Club",
+        messageId: "MyClub",
+        type: "item",
+        permittedRole: [RoutePermittedRole.User],
+        icon: <FaUsers />,
+        url: "/my-club",
+      },
+      {
+        id: "explore",
+        title: "Explore",
+        messageId: "Explore",
+        type: "item",
+        permittedRole: [RoutePermittedRole.User],
+        icon: <MdExplore />,
+        url: "/studentExplore",
+      },
+    ],
+  },
+  // {
+  //       id: "error-pages",
+  //       title: "Error Pages",
+  //       messageId: "sidebar.pages.errorPages",
+  //       type: "collapse",
+  //       icon: <BiErrorAlt />,
+  //       children: [
+  //         {
+  //           id: "error-401",
+  //           title: "402",
+  //           messageId: "sidebar.pages.errorPages.401",
+  //           type: "item",
+  //           permittedRole: [RoutePermittedRole.User],
+  //           url: "/error-pages/error-401",
+  //         },
+  //         {
+  //           id: "error-403",
+  //           title: "403",
+  //           messageId: "sidebar.pages.errorPages.403",
+  //           type: "item",
+  //           permittedRole: [RoutePermittedRole.User],
+  //           url: "/error-pages/error-403",
+  //         },
+  //         {
+  //           id: "error-404",
+  //           title: "404",
+  //           messageId: "sidebar.pages.errorPages.404",
+  //           type: "item",
+  //           permittedRole: [RoutePermittedRole.User],
+  //           url: "/error-pages/error-404",
+  //         },
+  //         {
+  //           id: "error-500",
+  //           title: "500",
+  //           messageId: "sidebar.pages.errorPages.500",
+  //           type: "item",
+  //           permittedRole: [RoutePermittedRole.User],
+  //           url: "/error-pages/error-500",
+  //         },
+  //         {
+  //           id: "error-503",
+  //           title: "503",
+  //           messageId: "sidebar.pages.errorPages.503",
+  //           type: "item",
+  //           permittedRole: [RoutePermittedRole.User],
+  //           url: "/error-pages/error-503",
+  //         },
+  //         {
+  //           // id: "maintenance",
+  //           // title: "Maintenance",
+  //           // messageId: "sidebar.pages.errorPages.maintenance",
+  //           // type: "item",
+  //           permittedRole: [RoutePermittedRole.User],
+  //           url: "/error-pages/maintenance",
+  //         },
+  //         {
+  //           id: "coming-soon",
+  //           title: "Coming Soon",
+  //           messageId: "sidebar.pages.errorPages.comingSoon",
+  //           type: "item",
+  //           permittedRole: [RoutePermittedRole.User],
+  //           url: "/error-pages/coming-soon",
+  //         },
+  //       ],
+  //     },
 ];
 export default routesConfig;

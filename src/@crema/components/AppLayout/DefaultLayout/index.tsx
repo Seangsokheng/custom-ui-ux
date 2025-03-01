@@ -54,7 +54,7 @@ const DefaultLayout = ({ routes, routesConfig }: Props) => {
           <AppFixedFooter />
         </MainContent>
         {/* apptheme config */}
-        <AppThemeSetting />
+        {/* <AppThemeSetting /> */}
       </DefaultLayoutWrapper>
     </DefaultLayoutContainer>
   );

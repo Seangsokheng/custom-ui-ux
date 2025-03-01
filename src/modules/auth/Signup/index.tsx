@@ -1,6 +1,6 @@
-import SignupFirebase from './SignupFirebase';
+// import SignupFirebase from './SignupFirebase';
 
-export default SignupFirebase;
+// export default SignupFirebase;
 
-// import SigninJwtAuth from "./SignupJwtAuth";
-// export default SigninJwtAuth;
+import SignupJwtAuth from "./SignupJwtAuth";
+export default SignupJwtAuth;

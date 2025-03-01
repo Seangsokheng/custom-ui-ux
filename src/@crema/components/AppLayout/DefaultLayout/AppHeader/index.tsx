@@ -16,6 +16,7 @@ import AppTooltip from "../../../AppTooltip";
 import { alpha } from "@mui/material/styles";
 import AppLogo from "../../components/AppLogo";
 import { allowMultiLanguage } from "@crema/constants/AppConst";
+import { CardMedia } from "@mui/material";
 
 type Props = {
   toggleNavCollapsed: () => void;
@@ -53,6 +54,27 @@ const AppHeader = ({ toggleNavCollapsed }: Props) => {
           paddingRight: { xs: 5, md: 7.5, xl: 12.5 },
         }}
       >
+        <Box
+          component="a"
+          href="/student"
+          sx={{
+            display: 'flex', 
+            alignItems: 'center',
+            flexShrink: 0, 
+            gap: { xs: 0.5, sm: 1, md: 4 }, // Adjusted gap for small screens
+          }}
+        >
+          <CardMedia
+            component="img"
+            sx={{
+              width: { xs: 65, sm: 80, md: 110 }, // Shrink logo for mobile S
+              height: { xs: 20, sm: 25, md: 35 },
+              objectFit: "contain"
+            }}
+            image="/assets/images/guest/logo.png"
+            alt="logo"
+          />
+        </Box>
         <Hidden lgUp>
           <IconButton
             sx={{
@@ -81,9 +103,9 @@ const AppHeader = ({ toggleNavCollapsed }: Props) => {
           }}
         />
         {/* <AppSearchBar iconPosition="right" placeholder="Search…" /> */}
-        {allowMultiLanguage && (
+        {/* {allowMultiLanguage && (
           <AppLngSwitcher iconOnly={true} tooltipPosition="bottom" />
-        )}
+        )} */}
 
         <Box sx={{ ml: 4 }}>
           <Hidden smDown>
@@ -108,7 +130,7 @@ const AppHeader = ({ toggleNavCollapsed }: Props) => {
                   px: 1.85,
                 }}
               >
-                <AppMessages />
+                {/* <AppMessages /> */}
               </Box>
             </Box>
           </Hidden>

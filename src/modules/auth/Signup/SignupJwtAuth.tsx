@@ -1,160 +1,281 @@
 import Button from "@mui/material/Button";
-import { Checkbox } from "@mui/material";
 import { Form, Formik } from "formik";
 import * as yup from "yup";
 
 import AppInfoView from "@crema/components/AppInfoView";
 import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import IntlMessages from "@crema/helpers/IntlMessages";
 import AppTextField from "@crema/components/AppFormComponents/AppTextField";
 import { Fonts } from "@crema/constants/AppEnums";
-import { Link } from "react-router-dom";
-import { useJWTAuthActions } from "@crema/services/auth/jwt-auth/JWTAuthProvider";
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import { useAuthMethod } from '@crema/hooks/AuthHooks';// Added useJWTAuthActions
 import { useIntl } from "react-intl";
 import AuthWrapper from "../AuthWrapper";
+import CircularProgress from "@mui/material/CircularProgress";
 
+console.log("Direct test");
+const directTest = async () => {
+  const { signUpUser } = useAuthMethod();
+  try {
+    await signUpUser({
+      email: "test@example.com",
+      password: "password123",
+      firstname: "Test",
+      lastname: "User",
+      username: "testuser",
+      phone: "1234567890"
+    });
+    console.log("Direct test completed");
+  } catch (e) {
+    console.error("Direct test failed:", e);
+  }
+};
+directTest();
 const SignupJwtAuth = () => {
-  const { signUpUser } = useJWTAuthActions();
+  const { signUpUser } = useAuthMethod();
   const { messages } = useIntl();
+  const navigate = useNavigate(); // Add navigation hook
 
+  // Enhanced validation schema with specific requirements
   const validationSchema = yup.object({
-    name: yup.string().required(String(messages["validation.nameRequired"])),
+    firstName: yup
+      .string()
+      .required(String(messages["validation.firstNameRequired"] || "Please enter first name!")),
+    lastName: yup
+      .string()
+      .required(String(messages["validation.lastNameRequired"] || "Please enter last name!")),
+    username: yup
+      .string()
+      .min(5, "Username must be at least 5 characters")
+      .required(String(messages["validation.usernameRequired"] || "Username is required")),
     email: yup
       .string()
-      .email(String(messages["validation.emailFormat"]))
-      .required(String(messages["validation.emailRequired"])),
+      .email(String(messages["validation.emailFormat"] || "Invalid email format"))
+      .matches(
+        /@paragoniu\.edu\.kh$/,
+        "Must use your school email (@paragoniu.edu.kh)"
+      )
+      .required(String(messages["validation.emailRequired"] || "Email is required")),
+    phone: yup
+      .string()
+      .matches(
+        /^(0|(\+855))[1-9][0-9]{7,8}$/,
+        "Please enter a valid Cambodian phone number"
+      )
+      .required(String(messages["validation.phoneRequired"] || "Phone number is required")),
     password: yup
       .string()
-      .required(String(messages["validation.passwordRequired"])),
+      .min(8, "Password must be at least 8 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      )
+      .required(String(messages["validation.passwordRequired"] || "Please enter password!")),
   });
+
+  interface SignupFormValues {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    phone: string;
+    password: string;
+  }
+
+  const handleSubmit = async (data: SignupFormValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
+    console.log("handleSubmit starting..."); // Confirm function is called
+    setSubmitting(true);
+    try {          
+      console.log("Data submitted: ", data);
+      
+      // Make sure property names match what JWTAuthProvider expects
+      await signUpUser({
+        firstname: data.firstName, // Notice the case difference
+        lastname: data.lastName,    
+        username: data.username,  
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+      });
+      
+      console.log("Signup completed successfully");
+      // Consider adding navigation here on success
+      // navigate('/signin');
+      
+    } catch(error) {  
+      console.error("Signup error in component:", error);
+      // Consider showing error to user
+    } finally {
+      setSubmitting(false); // Make sure to reset submission state
+    }
+  };
+ 
 
   return (
     <AuthWrapper>
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", mb: 5 }}>
+        <Typography
+          variant="h2"
+          component="h2"
+          sx={{
+            mb: 1.5,
+            color: (theme) => theme.palette.text.primary,
+            fontWeight: Fonts.SEMI_BOLD,
+            textAlign: "center",
+          }}
+        >
+          <IntlMessages id="common.signup" defaultMessage="Sign Up" />
+        </Typography>
+
+        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", mb: 3 }}>
           <Formik
             validateOnChange={true}
+            validateOnBlur={true}
             initialValues={{
-              name: "",
+              firstName: "",
+              lastName: "",
+              username: "",
               email: "",
+              phone: "",
               password: "",
-              confirmPassword: "",
             }}
             validationSchema={validationSchema}
-            onSubmit={(data, { setSubmitting }) => {
-              setSubmitting(true);
-              signUpUser({
-                email: data.email,
-                password: data.password,
-                name: data.name,
-              });
-              setSubmitting(false);
-            }}
+            onSubmit={handleSubmit}
           >
-            {({ isSubmitting }) => (
+            {({ isSubmitting, values, errors, touched }) => (
               <Form style={{ textAlign: "left" }} noValidate autoComplete="off">
-                <Box sx={{ mb: { xs: 4, xl: 5 } }}>
-                  <AppTextField
-                    label={<IntlMessages id="common.name" />}
-                    name="name"
-                    variant="outlined"
-                    sx={{
-                      width: "100%",
-                      "& .MuiInputBase-input": {
-                        fontSize: 14,
-                      },
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ mb: { xs: 4, xl: 5 } }}>
-                  <AppTextField
-                    label={<IntlMessages id="common.email" />}
-                    name="email"
-                    variant="outlined"
-                    sx={{
-                      width: "100%",
-                      "& .MuiInputBase-input": {
-                        fontSize: 14,
-                      },
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ mb: { xs: 4, xl: 5 } }}>
-                  <AppTextField
-                    label={<IntlMessages id="common.password" />}
-                    name="password"
-                    type="password"
-                    variant="outlined"
-                    sx={{
-                      width: "100%",
-                      "& .MuiInputBase-input": {
-                        fontSize: 14,
-                      },
-                    }}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    mb: { xs: 3, xl: 4 },
-                    display: "flex",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Checkbox
-                      id="iAgreeTo"
+                <Grid container spacing={2}>
+                  {/* First Name and Last Name Fields (side by side) */}
+                  <Grid item xs={12} sm={6}>
+                    <AppTextField
+                      label={<IntlMessages id="common.firstName" defaultMessage="First Name" />}
+                      name="firstName"
+                      variant="outlined"
                       sx={{
-                        ml: -3,
+                        width: "100%",
+                        "& .MuiInputBase-input": {
+                          fontSize: 14,
+                          padding: "12px 16px",
+                        },
                       }}
                     />
-                    <Box
-                      aria-labelledby="iAgreeTo"
-                      component="span"
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <AppTextField
+                      label={<IntlMessages id="common.lastName" defaultMessage="Last Name" />}
+                      name="lastName"
+                      variant="outlined"
                       sx={{
-                        mr: 2,
-                        color: "grey.700",
+                        width: "100%",
+                        "& .MuiInputBase-input": {
+                          fontSize: 14,
+                          padding: "12px 16px",
+                        },
                       }}
-                    >
-                      <IntlMessages id="common.iAgreeTo" />
-                    </Box>
-                  </Box>
-                  <Box
-                    component="span"
-                    sx={{
-                      color: (theme) => theme.palette.primary.main,
-                      cursor: "pointer",
-                    }}
-                  >
-                    <IntlMessages id="common.termConditions" />
-                  </Box>
-                </Box>
+                    />
+                  </Grid>
 
-                <div>
+                  {/* Username Field */}
+                  <Grid item xs={12}>
+                    <AppTextField
+                      label={<IntlMessages id="username" defaultMessage="Username" />}
+                      name="username"
+                      variant="outlined"
+                      sx={{
+                        width: "100%",
+                        "& .MuiInputBase-input": {
+                          fontSize: 14,
+                          padding: "12px 16px",
+                        },
+                      }}
+                      helperText={touched.username && errors.username ? errors.username : "Choose a unique username (min 5 characters)"}
+                    />
+                  </Grid>
+
+                  {/* Email Field */}
+                  <Grid item xs={12}>
+                    <AppTextField
+                      label={<IntlMessages id="common.email" defaultMessage="School Email" />}
+                      name="email"
+                      variant="outlined"
+                      placeholder="your.name@paragoniu.edu.kh"
+                      sx={{
+                        width: "100%",
+                        "& .MuiInputBase-input": {
+                          fontSize: 14,
+                          padding: "12px 16px",
+                        },
+                      }}
+                      helperText={touched.email && errors.email ? errors.email : "Use your @paragoniu.edu.kh email address"}
+                    />
+                  </Grid>
+
+                  {/* Phone Field */}
+                  <Grid item xs={12}>
+                    <AppTextField
+                      label={<IntlMessages id="common.phone" defaultMessage="Phone" />}
+                      name="phone"
+                      variant="outlined"
+                      placeholder="0XX XXX XXX"
+                      sx={{
+                        width: "100%",
+                        "& .MuiInputBase-input": {
+                          fontSize: 14,
+                          padding: "12px 16px",
+                        },
+                      }}
+                      helperText={touched.phone && errors.phone ? errors.phone : "Enter a valid Cambodian phone number"}
+                    />
+                  </Grid>
+                  
+                  {/* Password Field */}
+                  <Grid item xs={12}>
+                    <AppTextField
+                      label={<IntlMessages id="common.password" defaultMessage="Password" />}
+                      name="password"
+                      type="password"
+                      variant="outlined"
+                      sx={{
+                        width: "100%",
+                        "& .MuiInputBase-input": {
+                          fontSize: 14,
+                          padding: "12px 16px",
+                        },
+                      }}
+                      helperText={
+                        touched.password && errors.password 
+                          ? errors.password 
+                          : "Password must be at least 8 characters and include uppercase, lowercase, and numbers"
+                      }
+                    />
+                  </Grid>
+                </Grid>
+
+                <Box sx={{ mt: 4, textAlign: "center" }}>
                   <Button
                     variant="contained"
                     color="primary"
                     disabled={isSubmitting}
                     sx={{
-                      minWidth: 160,
-                      fontWeight: Fonts.REGULAR,
+                      minWidth: 180,
+                      fontWeight: Fonts.MEDIUM,
                       fontSize: 16,
                       textTransform: "capitalize",
-                      padding: "4px 16px 8px",
+                      padding: "10px 20px",
+                      borderRadius: "30px",
+                      boxShadow: (theme) => theme.shadows[3],
+                      "&:hover": {
+                        boxShadow: (theme) => theme.shadows[5],
+                      },
                     }}
                     type="submit"
+                    startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
                   >
-                    <IntlMessages id="common.signup" />
+                    <IntlMessages id="common.signup" defaultMessage="Sign Up" />
                   </Button>
-                </div>
+                </Box>
               </Form>
             )}
           </Formik>
@@ -163,10 +284,12 @@ const SignupJwtAuth = () => {
         <Box
           sx={{
             color: "grey.700",
+            mt: 3,
+            textAlign: "center"
           }}
         >
           <span style={{ marginRight: 4 }}>
-            <IntlMessages id="common.alreadyHaveAccount" />
+            <IntlMessages id="common.alreadyHaveAccount" defaultMessage="Already have account?" />
           </span>
           <Box
             component="span"
@@ -175,11 +298,15 @@ const SignupJwtAuth = () => {
               "& a": {
                 color: (theme) => theme.palette.primary.main,
                 textDecoration: "none",
+                transition: "color 0.3s ease",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
               },
             }}
           >
             <Link to="/signin">
-              <IntlMessages id="common.signIn" />
+              <IntlMessages id="common.signIn" defaultMessage="Sign In" />
             </Link>
           </Box>
         </Box>

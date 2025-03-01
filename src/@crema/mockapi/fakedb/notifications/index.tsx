@@ -4,7 +4,7 @@ export type NotificationData = {
   image: string;
   message: string;
 };
-
+// notificationData
 const notificationData: NotificationData[] = [
   {
     id: '1000',

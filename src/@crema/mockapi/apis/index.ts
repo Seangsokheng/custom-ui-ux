@@ -10,3 +10,4 @@ import './scrumboard';
 import './mail';
 import './userList';
 import './extrapages';
+import './jwt-auth';

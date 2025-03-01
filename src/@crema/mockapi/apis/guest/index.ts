@@ -1,23 +1,4 @@
-//import { NextApiRequest, NextApiResponse } from 'next';
-import { Club } from '@crema/types/models/guest';
+import { mockClubs } from '../../fakedb/guest';
+import mock from '../MockConfig';
 
-export const mockClubs: Club[] = [
-    {
-      id: '1',
-      name: 'Basketball Club',
-      description: 'Join our basketball club to develop your skills and compete in local tournaments.',
-      imageUrl: '/images/basketball-club.jpg',
-    },
-    {
-      id: '2',
-      name: 'Football Club',
-      description: 'Experience the thrill of football with our professional coaches and weekly matches.',
-      imageUrl: '/images/football-club.jpg',
-    },
-    {
-      id: '3',
-      name: 'Volleyball Club',
-      description: 'Learn volleyball fundamentals and advanced techniques in a fun environment.',
-      imageUrl: '/images/volleyball-club.jpg',
-    },
-  ];
+mock.onGet('/api/featured-clubs').reply(200, mockClubs);
