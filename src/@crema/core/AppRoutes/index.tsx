@@ -7,6 +7,8 @@ import { dashBoardConfigs } from "./DashboardsRoutes";
 import { accountPagesConfigs } from "./AccountRoutes";
 import { guestConfig } from "./guest";
 import { studentConfig } from "./student";
+import { adminConfig } from "./admin";
+import { managerConfig } from "./clubManger";
 
 // handle auth
 const authorizedStructure = (loginUrl: string) => {
@@ -17,6 +19,8 @@ const authorizedStructure = (loginUrl: string) => {
       ...dashBoardConfigs,
       ...accountPagesConfigs,
       ...studentConfig,
+      ...adminConfig,
+      ...managerConfig
       // ...guestConfig,
     ],
   };

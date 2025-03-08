@@ -20,6 +20,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { getClubs } from '@crema/mockapi/apis/guest/explore';
+import { fetchAllClubs } from '@crema/services/club';
 import { Club } from '@crema/types/models/guest';
 
 const ClubsPage = () => {
@@ -28,20 +29,23 @@ const ClubsPage = () => {
   const [category, setCategory] = useState('All Categories');
   const theme = useTheme();
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    // Fetch clubs from mock API
-    const fetchClubs = async () => {
-      try {
-        const clubsData = await getClubs();
-        setClubs(clubsData);
-      } catch (error) {
-        console.error('Error fetching clubs:', error);
-      }
-    };
-
-    fetchClubs();
-  }, []);
+      const loadClubs = async () => {
+        try {
+          setLoading(true);
+          const clubsData = await fetchAllClubs();
+          setClubs(clubsData);
+          
+        } catch (err) {
+          console.error('Error fetching clubs:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      loadClubs();
+    }, [fetchAllClubs]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -58,7 +62,7 @@ const ClubsPage = () => {
   });
 
   const handleViewDetails = (clubId: number) => {
-    navigate(`/club/${clubId}`);
+    navigate(`/student/club/${clubId}`);
   };
 
   return (
@@ -183,7 +187,7 @@ const ClubsPage = () => {
                           <Typography sx={{ fontSize: '0.9rem' }}>{club.members || 0} members</Typography>
                         </Box>
                         <Button variant="text" color="primary" onClick={() => handleViewDetails(club.id)}>
-                          Join
+                          View
                         </Button>
                       </Box>
                     </CardContent>

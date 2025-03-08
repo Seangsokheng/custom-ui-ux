@@ -15,12 +15,22 @@ export const useAuthUser = () => {
 };
 
 export const useAuthMethod = () => {
-  const {signInUser, signUpUser, logout} = useJWTAuthActions();
-
+  const {
+    signInUser,
+    signUpUser,
+    logout,
+    verifyOtp,
+    resendOtp,
+    signInWithGoogle
+  } = useJWTAuthActions();
+  
   return {
     signInUser,
     logout,
     signUpUser,
+    verifyOtp,
+    resendOtp,
+    signInWithGoogle
   };
 };
 //For Firebase Auth

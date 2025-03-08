@@ -4,15 +4,32 @@ import { Club } from '@crema/types/models/guest';
 import AppGridContainer from "@crema/components/AppGridContainer";
 import AppAnimate from "@crema/components/AppAnimate";
 import { useEffect, useState } from 'react';
-import { mockClubs } from '@crema/mockapi/fakedb/guest';
+import { fetchFeaturedClubs } from '@crema/services/club';
 
-export default function FeatureClubs ()  {
+export default function FeatureClubs() {
   const [clubs, setClubs] = useState<Club[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    setClubs(mockClubs);
+    const getClubs = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchFeaturedClubs();
+        setClubs(data);
+      } catch (error) {
+        console.error('Failed to fetch clubs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getClubs();
   }, []);
+
+  // Rest of your component remains the same
+  // ...
+
 
   return (
     <AppAnimate animation="transition.slideUpIn" delay={200}>
@@ -41,7 +58,7 @@ export default function FeatureClubs ()  {
             Featured Clubs
           </Typography>
           <AppGridContainer>
-            {(clubs ?? []).map((club) => (
+            {(clubs ?? []).slice(0, 3).map((club) => (
               <Grid item xs={12} md={4} key={club.id}>
                 <Card
                   elevation={0}

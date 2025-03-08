@@ -99,9 +99,9 @@ const ClubListingPage = () => {
 
   return (
     <Box sx={{ p: 3, bgcolor: '#F8F9FE', minHeight: '100vh' }}>
-      <Grid container spacing={3}>
+      <Grid container spacing={2}> {/* Reduced spacing from 3 to 2 */}
         {clubsData.map((club) => (
-          <Grid item xs={12} sm={6} md={4} key={club.id}>
+          <Grid item xs={6} sm={4} md={3} key={club.id}> {/* Adjusted grid sizes to make cards smaller */}
             <Card
               sx={{
                 height: '100%',
@@ -109,38 +109,38 @@ const ClubListingPage = () => {
                 flexDirection: 'column',
                 borderRadius: 2,
                 boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.05)',
-                cursor: 'pointer', // Add cursor pointer to indicate it's clickable
+                cursor: 'pointer',
               }}
-              onClick={() => navigate(`/club/${club.id}`)} // Navigate to club details
+              onClick={() => navigate(`/student/club/${club.id}`)}
             >
               <CardMedia
-                component="img"
-                height="160"
-                image="/assets/images/guest/piubc.jpg"
-                alt={club.name}
-                sx={{ p: 2, objectFit: 'contain' }}
-              />
-              <CardContent sx={{ flexGrow: 1, pt: 0 }}>
-                <Typography variant="h6" gutterBottom component="div">
+                  component="img"
+                  height="60px" // Reduced from 120
+                  sx={{ maxHeight: '200px', objectFit: 'contain', p: 0 }} // Minimized padding
+                  image="/assets/images/guest/piubc.jpg"
+                  alt={club.name}
+                />
+              <CardContent sx={{ flexGrow: 1, pt: 0, p: 1.5 }}> {/* Reduced padding */}
+                <Typography variant="subtitle1" gutterBottom component="div"> {/* Changed from h6 to subtitle1 */}
                   {club.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontSize: '0.75rem' }}> {/* Reduced font size */}
                   {club.description}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <People size={16} />
-                    <Typography variant="body2">{club.memberCount} members</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1, mb: 1 }}> {/* Reduced gap and margins */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}> {/* Reduced gap */}
+                    <People size={14} /> {/* Reduced icon size */}
+                    <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>{club.memberCount} members</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Event size={16} />
-                    <Typography variant="body2">{club.postCount} posts</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}> {/* Reduced gap */}
+                    <Event size={14} /> {/* Reduced icon size */}
+                    <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>{club.postCount} posts</Typography>
                   </Box>
                 </Box>
                 <Button
                   fullWidth
                   {...getButtonConfig(club.status)}
-                  sx={{ mt: 'auto' }}
+                  sx={{ mt: 'auto', py: 1 }} // Reduced vertical padding
                 >
                   {getButtonConfig(club.status).text}
                 </Button>

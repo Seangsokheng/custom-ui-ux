@@ -44,7 +44,7 @@ export default function JoinCommunity ()  {
               py: { xs: 1, md: 1.5 },
               fontSize: { xs: '0.9rem', md: '1rem' },
               '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+               // backgroundColor: 'rgba(255, 255, 255, 0.9)',
               },
             }}
           >

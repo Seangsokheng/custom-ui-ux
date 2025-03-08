@@ -8,7 +8,7 @@ import React, {
 import { AuthUserType } from '@crema/types/models/AuthUser';
 import jwtAxios, { setAuthToken } from './index';
 import { useInfoViewActionsContext } from '@crema/context/AppContextProvider/InfoViewContextProvider';
-console.log("JWTAuthProvider loaded!");
+
 interface JWTAuthContextProps {
   user: AuthUserType | null | undefined;
   isAuthenticated: boolean;
@@ -30,8 +30,11 @@ interface SignInProps {
 }
 
 interface JWTAuthActionsProps {
-  signUpUser: (data: SignUpProps) => void; // Changed to return Promise
-  signInUser: (data: SignInProps) => void; // Changed to return Promise
+  signUpUser: (data: SignUpProps) => Promise<any>;
+  signInUser: (data: SignInProps) => Promise<any>;
+  verifyOtp: (email: string, otp: string) => Promise<any>;
+  resendOtp: (email: string) => Promise<any>;
+  signInWithGoogle: () => void;
   logout: () => void;
 }
 
@@ -40,9 +43,13 @@ const JWTAuthContext = createContext<JWTAuthContextProps>({
   isAuthenticated: false,
   isLoading: false,
 });
+
 const JWTAuthActionsContext = createContext<JWTAuthActionsProps>({
   signUpUser: () => Promise.resolve(),
   signInUser: () => Promise.resolve(),
+  verifyOtp: () => Promise.resolve(),
+  resendOtp: () => Promise.resolve(),
+  signInWithGoogle: () => {},
   logout: () => {},
 });
 
@@ -107,7 +114,6 @@ const JWTAuthAuthProvider: React.FC<JWTAuthAuthProviderProps> = ({
     password: string;
   }) => {
     infoViewActionsContext.fetchStart();
-    console.log("signin");
     try {
       const { data } = await jwtAxios.post('auth', { email, password });
       localStorage.setItem('token', data.token);
@@ -126,8 +132,15 @@ const JWTAuthAuthProvider: React.FC<JWTAuthAuthProviderProps> = ({
         isAuthenticated: false,
         isLoading: false,
       });
-      infoViewActionsContext.fetchError('Something went wrong');
-      throw error; // Re-throw for proper error handling in component
+      
+      // Display more specific error message if available
+      if ((error as any).response && (error as any).response.data && (error as any).response.data.msg) {
+        infoViewActionsContext.fetchError((error as any).response.data.msg);
+      } else {
+        infoViewActionsContext.fetchError('Something went wrong');
+      }
+      
+      throw error;
     }
   };
 
@@ -139,67 +152,28 @@ const JWTAuthAuthProvider: React.FC<JWTAuthAuthProviderProps> = ({
     username,
     phone,
   }: SignUpProps) => {
-    console.log(email, password, firstname, lastname, username, phone);
+    infoViewActionsContext.fetchStart();
     try {
-      console.log("1. Preparing data:", { firstname, lastname, username, phone, email, password });
+      console.log("Sending signup request with data:", { firstname, lastname, username, phone, email, password });
       
-      // Log the API endpoint
-      console.log("2. Sending request to:", jwtAxios.defaults.baseURL + 'users');
-      
-      // Make the API call to register the user
-      console.log("3. Sending POST request...");
+      // Make the API call to register the user with OTP requirement
       const response = await jwtAxios.post('users', { 
         firstname, 
         lastname, 
         username,
         phone, 
         email, 
-        password 
+        password,
+        requireOtp: true // Flag to indicate OTP verification is required
       });
       
-      console.log("4. Raw response:", response);
       const { data } = response;
-      console.log("5. Response data:", data);
+      console.log("Signup response:", data);
       
-      // Check if there's a token in the response
-      console.log("6. Token present:", data && data.token ? "Yes" : "No");
-      
-      if (data && data.token) {
-        console.log("7. Setting token in localStorage");
-        localStorage.setItem('token', data.token);
-        setAuthToken(data.token);
-        
-        // Get user data
-        console.log("8. Fetching user data");
-        try {
-          const res = await jwtAxios.get('/auth');
-          console.log("9. User data response:", res.data);
-          setJWTAuthData({
-            user: res.data,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } catch (authError) {
-          console.error("10. Error fetching user after signup:", authError);
-          // Even if getting the user fails, the registration was successful
-        }
-      } else {
-        console.log("7. No token found in response");
-      }
-      
-      console.log("11. Signup process completed successfully");
-      infoViewActionsContext.fetchSuccess();
-      return data; // Make sure to return the data
+      infoViewActionsContext.showMessage('Registration successful! Please check your email for verification code.');
+      return data;
     } catch (error) {
       console.error("ERROR in signUpUser:", error);
-      console.log("Network error status:", (error as any).response ? (error as any).response.status : "No response");
-      console.log("Network error data:", ( error as any).response ? (error as any).response.data : "No data");
-      
-      setJWTAuthData({
-        ...firebaseData,
-        isAuthenticated: false,
-        isLoading: false,
-      });
       
       // Display more specific error message if available
       if ((error as any).response && (error as any).response.data && (error as any).response.data.msg) {
@@ -208,9 +182,121 @@ const JWTAuthAuthProvider: React.FC<JWTAuthAuthProviderProps> = ({
         infoViewActionsContext.fetchError('Registration failed. Please try again.');
       }
       
-      throw error; // Re-throw for proper error handling in component
-    } finally {
-      console.log("=== SIGNUP PROCESS ENDED ===");
+      throw error;
+    }
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
+    infoViewActionsContext.fetchStart();
+    try {
+      const response = await jwtAxios.post('auth/verify-otp', { email, otp });
+      const { data } = response;
+      
+      if (data && data.token) {
+        localStorage.setItem('token', data.token);
+        setAuthToken(data.token);
+        
+        // Get user data after successful verification
+        try {
+          const res = await jwtAxios.get('/auth');
+          setJWTAuthData({
+            user: res.data,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (authError) {
+          console.error("Error fetching user after OTP verification:", authError);
+        }
+      }
+      
+      infoViewActionsContext.showMessage('Email verification successful!');
+      return data;
+    } catch (error) {
+      console.error("Error in verifyOtp:", error);
+      
+      if ((error as any).response && (error as any).response.data && (error as any).response.data.msg) {
+        infoViewActionsContext.fetchError((error as any).response.data.msg);
+      } else {
+        infoViewActionsContext.fetchError('Verification failed. Please try again.');
+      }
+      
+      throw error;
+    }
+  };
+
+  const resendOtp = async (email: string) => {
+    infoViewActionsContext.fetchStart();
+    try {
+      const response = await jwtAxios.post('auth/resend-otp', { email });
+      infoViewActionsContext.showMessage('Verification code sent to your email');
+      return response.data;
+    } catch (error) {
+      console.error("Error in resendOtp:", error);
+      
+      if ((error as any).response && (error as any).response.data && (error as any).response.data.msg) {
+        infoViewActionsContext.fetchError((error as any).response.data.msg);
+      } else {
+        infoViewActionsContext.fetchError('Failed to resend verification code. Please try again.');
+      }
+      
+      throw error;
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    infoViewActionsContext.fetchStart();
+    try {
+      // Redirect to Google OAuth endpoint
+      // This URL should be replaced with your actual Google OAuth endpoint
+      const googleAuthUrl = `${jwtAxios.defaults.baseURL}auth/google`;
+      
+      // Open Google sign-in in a popup
+      const width = 500;
+      const height = 600;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+      
+      const popup = window.open(
+        googleAuthUrl,
+        'GoogleAuth',
+        `width=${width},height=${height},left=${left},top=${top}`
+      );
+      
+      // Handle the result from the popup
+      window.addEventListener('message', async (event) => {
+        // Make sure the message is from our expected origin
+        if (event.origin !== window.location.origin) return;
+        
+        if (event.data && event.data.token) {
+          // Handle successful authentication
+          localStorage.setItem('token', event.data.token);
+          setAuthToken(event.data.token);
+          
+          try {
+            const res = await jwtAxios.get('/auth');
+            setJWTAuthData({
+              user: res.data,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+            infoViewActionsContext.fetchSuccess();
+          } catch (authError) {
+            console.error("Error fetching user after Google auth:", authError);
+            infoViewActionsContext.fetchError('Authentication failed after Google sign-in');
+          }
+          
+          // Close the popup
+          if (popup) popup.close();
+        } else if (event.data && event.data.error) {
+          infoViewActionsContext.fetchError(event.data.error);
+          if (popup) popup.close();
+        }
+      });
+      
+      infoViewActionsContext.fetchSuccess();
+    } catch (error) {
+      console.error("Google Sign-in Error:", error);
+      infoViewActionsContext.fetchError('Google sign-in failed. Please try again.');
     }
   };
 
@@ -234,6 +320,9 @@ const JWTAuthAuthProvider: React.FC<JWTAuthAuthProviderProps> = ({
         value={{
           signUpUser,
           signInUser,
+          verifyOtp,
+          resendOtp,
+          signInWithGoogle,
           logout,
         }}
       >
@@ -242,4 +331,5 @@ const JWTAuthAuthProvider: React.FC<JWTAuthAuthProviderProps> = ({
     </JWTAuthContext.Provider>
   );
 };
+
 export default JWTAuthAuthProvider;

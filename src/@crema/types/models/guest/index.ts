@@ -11,6 +11,9 @@ export interface Club {
   vision?: string;
   mission?: string;
   goal?: string;
+  isPublic?: boolean;
+  isMember? : boolean;
+  status?: 'pending' | 'joined' | 'available';
   contactInfo?: {
     email: string;
     phone: string;

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import { Form, Formik } from "formik";
 import * as yup from "yup";
@@ -9,34 +10,21 @@ import Typography from "@mui/material/Typography";
 import IntlMessages from "@crema/helpers/IntlMessages";
 import AppTextField from "@crema/components/AppFormComponents/AppTextField";
 import { Fonts } from "@crema/constants/AppEnums";
-import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
-import { useAuthMethod } from '@crema/hooks/AuthHooks';// Added useJWTAuthActions
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthMethod } from '@crema/hooks/AuthHooks';
 import { useIntl } from "react-intl";
 import AuthWrapper from "../AuthWrapper";
 import CircularProgress from "@mui/material/CircularProgress";
+import OtpVerification from "./OtpVerification";
+import GoogleButton from "./SignupWithGoogle";
+import Divider from "@mui/material/Divider";
 
-console.log("Direct test");
-const directTest = async () => {
-  const { signUpUser } = useAuthMethod();
-  try {
-    await signUpUser({
-      email: "test@example.com",
-      password: "password123",
-      firstname: "Test",
-      lastname: "User",
-      username: "testuser",
-      phone: "1234567890"
-    });
-    console.log("Direct test completed");
-  } catch (e) {
-    console.error("Direct test failed:", e);
-  }
-};
-directTest();
 const SignupJwtAuth = () => {
   const { signUpUser } = useAuthMethod();
   const { messages } = useIntl();
-  const navigate = useNavigate(); // Add navigation hook
+  const navigate = useNavigate();
+  const [showOtpVerification, setShowOtpVerification] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   // Enhanced validation schema with specific requirements
   const validationSchema = yup.object({
@@ -85,14 +73,13 @@ const SignupJwtAuth = () => {
   }
 
   const handleSubmit = async (data: SignupFormValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
-    console.log("handleSubmit starting..."); // Confirm function is called
     setSubmitting(true);
     try {          
       console.log("Data submitted: ", data);
       
       // Make sure property names match what JWTAuthProvider expects
       await signUpUser({
-        firstname: data.firstName, // Notice the case difference
+        firstname: data.firstName,
         lastname: data.lastName,    
         username: data.username,  
         email: data.email,
@@ -100,18 +87,33 @@ const SignupJwtAuth = () => {
         password: data.password,
       });
       
-      console.log("Signup completed successfully");
-      // Consider adding navigation here on success
-      // navigate('/signin');
+      console.log("Signup completed, awaiting OTP verification");
+      setRegisteredEmail(data.email);
+      setShowOtpVerification(true);
       
     } catch(error) {  
       console.error("Signup error in component:", error);
-      // Consider showing error to user
     } finally {
-      setSubmitting(false); // Make sure to reset submission state
+      setSubmitting(false);
     }
   };
- 
+
+  const handleVerificationSuccess = () => {
+    console.log("OTP verification successful");
+    navigate('/signin');
+  };
+
+  // If OTP verification is active, show that component
+  if (showOtpVerification) {
+    return (
+      <AuthWrapper>
+        <OtpVerification 
+          email={registeredEmail} 
+          onVerificationSuccess={handleVerificationSuccess} 
+        />
+      </AuthWrapper>
+    );
+  }
 
   return (
     <AuthWrapper>
@@ -128,6 +130,31 @@ const SignupJwtAuth = () => {
         >
           <IntlMessages id="common.signup" defaultMessage="Sign Up" />
         </Typography>
+
+        {/* Google Sign Up Button */}
+        <Box sx={{ mb: 3, mt: 1 }}>
+          <GoogleButton 
+            fullWidth 
+            variant="outlined"
+            sx={{
+              borderRadius: "30px",
+              padding: "10px",
+              fontSize: 14,
+              fontWeight: Fonts.MEDIUM,
+            }}
+          />
+        </Box>
+
+        <Divider sx={{ mb: 3 }}>
+          <Typography
+            sx={{
+              color: (theme) => theme.palette.text.secondary,
+              px: 2,
+            }}
+          >
+            <IntlMessages id="common.or" defaultMessage="OR" />
+          </Typography>
+        </Divider>
 
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column", mb: 3 }}>
           <Formik

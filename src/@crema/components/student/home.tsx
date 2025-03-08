@@ -114,42 +114,77 @@ const StudentDashboard = () => {
           {posts.map((post) => {
             const [expanded, setExpanded] = useState(false);
             return (
-              <Grid item xs={12} md={6} key={post.id}>
-                <StyledCard sx={{ p: 1 }}>
-                  <CardContent sx={{ p: 1, pb: 0 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Avatar
-                        src={post.author.avatar}
-                        sx={{ width: 30, height: 30, mr: 1 }}
-                      />
-                      <Box>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                          {post.clubName}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {post.date}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="h6" sx={{ fontSize: '1rem', mb: 0.5 }}>
-                      {post.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {expanded ? post.content : `${post.content.substring(0, 110)}...`}
-                    </Typography>
-                    <Button size="small" onClick={() => setExpanded(!expanded)}>
-                      {expanded ? 'Show Less' : 'Read More'}
-                    </Button>
-                  </CardContent>
-                  <CardMedia
-                    component="img"
-                    height="120"
-                    image={post.image}
-                    alt={post.title}
-                    sx={{ objectFit: 'cover' }}
-                  />
-                </StyledCard>
-              </Grid>
+              <Grid 
+                                item 
+                                xs={4} 
+                                sm={4} 
+                                
+                                key={post.id}
+                              >
+                                <Card 
+                                  sx={{ 
+                                    height: '100%', 
+                                    display: 'flex', 
+                                    flexDirection: 'column',
+                                    borderRadius: 2, 
+                                    boxShadow: 3, 
+                                    transition: "0.3s", 
+                                    "&:hover": { boxShadow: 6 } 
+                                  }}
+                                >
+                                  <CardContent sx={{ flexGrow: 1 }}>
+                                    {/* Post Header */}
+                                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                                      <Avatar 
+                                        src={post.author.avatar} 
+                                        sx={{ mr: 2, width: 40, height: 40 }} 
+                                      />
+                                      <Box>
+                                        <Typography variant="subtitle1" fontWeight={600}>
+                                          {post.title}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                          {new Date(post.date).toLocaleDateString()}
+                                        </Typography>
+                                      </Box>
+                                    </Box>
+              
+                                    {/* Post Content */}
+                                    <Typography 
+                                      variant="body2" 
+                                      color="text.primary" 
+                                      sx={{ 
+                                        mb: 2, 
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis'
+                                      }}
+                                    >
+                                      {post.content}
+                                    </Typography>
+              
+                                    {/* Post Image */}
+                                    {post.image && (
+                                      <Box
+                                        component="img"
+                                        src={post.image}
+                                        alt="Post"
+                              
+                                        sx={{
+                                          width: "100%",
+                                          height: 180,
+                                          objectFit: "cover",
+                                          borderRadius: 2,
+                                          cursor: "pointer",
+                                          "&:hover": { opacity: 0.8 }
+                                        }}
+                                      />
+                                    )}
+                                  </CardContent>
+                                </Card>
+                              </Grid>
             );
           })}
         </Grid>
